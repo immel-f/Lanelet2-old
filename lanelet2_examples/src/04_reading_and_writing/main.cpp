@@ -3,6 +3,7 @@
 #include <lanelet2_io/io_handlers/Factory.h>
 #include <lanelet2_io/io_handlers/Writer.h>
 #include <lanelet2_projection/UTM.h>
+
 #include <cstdio>
 
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
@@ -15,7 +16,7 @@ std::string exampleMapPath = std::string(PKG_DIR) + "/../lanelet2_maps/res/mappi
 
 std::string tempfile(const std::string& name) {
   char tmpDir[] = "/tmp/lanelet2_example_XXXXXX";
-  auto file = mkdtemp(tmpDir);
+  auto* file = mkdtemp(tmpDir);
   if (file == nullptr) {
     throw lanelet::IOError("Failed to open a temporary file for writing");
   }
@@ -79,7 +80,7 @@ class FakeWriter : public lanelet::io_handlers::Writer {
  public:
   using Writer::Writer;
   void write(const std::string& /*filename*/, const lanelet::LaneletMap& /*laneletMap*/,
-             lanelet::ErrorMessages& /*errors*/) const override {
+             lanelet::ErrorMessages& /*errors*/, const lanelet::io::Configuration& /*params*/) const override {
     // this writer does just nothing
   }
   static constexpr const char* extension() {

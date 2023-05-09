@@ -1,8 +1,9 @@
 #pragma once
 #include <utility>
-#include "CompoundLineString.h"
-#include "CompoundPolygon.h"
-#include "Lanelet.h"
+
+#include "lanelet2_core/primitives/CompoundLineString.h"
+#include "lanelet2_core/primitives/CompoundPolygon.h"
+#include "lanelet2_core/primitives/Lanelet.h"
 
 namespace lanelet {
 
@@ -143,7 +144,7 @@ class LaneletSequence {
   //! get the combined right bounds of all lanelets
   CompoundLineString3d rightBound() const { return rightBound3d(); }
   //! get the right bound in 2d. To be used over rightBound where geometric calculations are required.
-  CompoundLineString2d rightBound2d() const { return utils::to2D(leftBound3d()); }
+  CompoundLineString2d rightBound2d() const { return utils::to2D(rightBound3d()); }
   //! get the combined right bounds of all lanelets
   CompoundLineString3d rightBound3d() const {
     return inverted() ? constData()->leftBound().invert() : constData()->rightBound();

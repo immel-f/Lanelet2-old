@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "Route.h"
-#include "RoutingGraph.h"
+
+#include "lanelet2_routing/Route.h"
+#include "lanelet2_routing/RoutingGraph.h"
 #include "test_routing_map.h"
 
 using namespace lanelet;
@@ -10,8 +11,6 @@ using namespace lanelet::routing::tests;
 template <Id FromId, Id ToId, Id... ViaIds>
 class TestRoute : public GermanVehicleGraph {
  public:
-  static constexpr Id From = FromId;
-  static constexpr Id To = ToId;
   explicit TestRoute(uint16_t routingCostId = 0, bool withLaneChanges = true) {
     Ids viaIds{ViaIds...};
     start = lanelets.at(From);
@@ -26,6 +25,9 @@ class TestRoute : public GermanVehicleGraph {
   ConstLanelet end;
   ConstLanelets via;
   Route route;
+  // these would better be defined as static constexpr, but c++14 doesnt support it well
+  const Id From{FromId};  // NOLINT
+  const Id To{ToId};      // NOLINT
 };
 
 class Route1 : public TestRoute<2001, 2014> {};
@@ -36,6 +38,7 @@ class Route1NoLc : public TestRoute<2001, 2014> {
 class Route2 : public TestRoute<2001, 2004> {};
 class Route3 : public TestRoute<2003, 2002> {};
 class Route4 : public TestRoute<2003, 2013> {};
+class Route5 : public TestRoute<2066, 2064> {};
 class RouteMaxHoseLeftRight : public TestRoute<2017, 2024> {};
 class RouteMaxHoseRightLeft : public TestRoute<2023, 2016> {};
 class RouteMaxHoseLeftRightDashedSolid : public TestRoute<2017, 2025> {};
@@ -57,12 +60,12 @@ template <typename T>
 class AllRoutesTest : public T {};
 
 using AllRoutes =
-    testing::Types<Route1, Route1NoLc, Route2, Route3, Route4, RouteMaxHoseLeftRight, RouteMaxHoseRightLeft,
+    testing::Types<Route1, Route1NoLc, Route2, Route3, Route4, Route5, RouteMaxHoseLeftRight, RouteMaxHoseRightLeft,
                    RouteMaxHoseLeftRightDashedSolid, RouteMaxHoseLeftRightDashedSolidFurther, RouteSolidDashed,
                    RouteSolidDashedWithAdjacent, RouteSplittedDiverging, RouteSplittedDivergingAndMerging,
                    RouteViaSimple, RouteMissingLanelet, RouteInCircle, RouteCircular, RouteCircularNoLc>;
 
-TYPED_TEST_CASE(AllRoutesTest, AllRoutes);
+TYPED_TEST_SUITE(AllRoutesTest, AllRoutes);
 
 TYPED_TEST(AllRoutesTest, CheckValidity) { EXPECT_NO_THROW(this->route.checkValidity()); }  // NOLINT
 
@@ -211,6 +214,11 @@ TEST_F(Route4, CreateRoute4) {                                           // NOLI
   EXPECT_EQ(route.getDebugLaneletMap()->pointLayer.size(), route.size());  // NOLINT
   EXPECT_NE(route.laneletSubmap(), nullptr);
   EXPECT_EQ(route.laneletSubmap()->laneletLayer.size(), route.size());  // NOLINT
+}
+
+TEST_F(Route5, NoCircle) {
+  EXPECT_EQ(route.size(), 9);
+  EXPECT_FALSE(hasLanelet(route.laneletSubmap()->laneletLayer, lanelets.at(2065)));
 }
 
 TEST_F(RouteMaxHoseLeftRight, CreateRouteMaxHose1) {                     // NOLINT

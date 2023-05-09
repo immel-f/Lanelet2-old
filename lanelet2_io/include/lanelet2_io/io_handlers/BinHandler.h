@@ -1,6 +1,6 @@
 #pragma once
-#include "Parser.h"
-#include "Writer.h"
+#include "lanelet2_io/io_handlers/Parser.h"
+#include "lanelet2_io/io_handlers/Writer.h"
 
 namespace lanelet {
 namespace io_handlers {
@@ -11,7 +11,8 @@ class BinWriter : public Writer {
  public:
   using Writer::Writer;
 
-  void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& /*errors*/) const override;
+  void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& /*errors*/,
+             const io::Configuration& /*params*/) const override;
 
   static constexpr const char* extension() { return ".bin"; }
 

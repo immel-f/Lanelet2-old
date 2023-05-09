@@ -1,9 +1,11 @@
 #pragma once
 #include <lanelet2_core/LaneletMap.h>
+
 #include <iostream>
 #include <memory>
-#include "../Projection.h"
-#include "IoHandler.h"
+
+#include "lanelet2_io/Projection.h"
+#include "lanelet2_io/io_handlers/IoHandler.h"
 
 namespace lanelet {
 namespace io_handlers {
@@ -23,7 +25,8 @@ class Writer : public IOHandler {
   using IOHandler::IOHandler;
   using Ptr = std::shared_ptr<Writer>;
 
-  virtual void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& errors) const = 0;
+  virtual void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& errors,
+                     const io::Configuration& params = io::Configuration()) const = 0;
 
   // IOHandler interface
  private:

@@ -1,9 +1,11 @@
-#include "GermanTrafficRules.h"
+#include "lanelet2_traffic_rules/GermanTrafficRules.h"
+
 #include <lanelet2_core/Forward.h>
 #include <lanelet2_core/primitives/BasicRegulatoryElements.h>
 #include <lanelet2_core/utility/Units.h>
-#include "Exceptions.h"
-#include "TrafficRulesFactory.h"
+
+#include "lanelet2_traffic_rules/Exceptions.h"
+#include "lanelet2_traffic_rules/TrafficRulesFactory.h"
 
 using namespace std::string_literals;
 
@@ -22,7 +24,7 @@ Velocity trafficSignToVelocity(const std::string& typeString) {
       {"de274-20", 20_kmh},   {"de274-30", 30_kmh},   {"de274-40", 40_kmh},   {"de274-50", 50_kmh},
       {"de274-60", 60_kmh},   {"de274-70", 70_kmh},   {"de274-80", 80_kmh},   {"de274-90", 90_kmh},
       {"de274-100", 100_kmh}, {"de274-110", 110_kmh}, {"de274-120", 120_kmh}, {"de274-130", 130_kmh},
-      {"de310", 50_kmh}};
+      {"de274_1", 30_kmh},    {"de274_1-20", 20_kmh}, {"de310", 50_kmh}};
   try {
     return StrToVelocity.at(typeString);
   } catch (std::out_of_range&) {
@@ -38,7 +40,7 @@ Velocity trafficSignToVelocity(const std::string& typeString) {
 }  // namespace
 
 Optional<SpeedLimitInformation> GermanVehicle::speedLimit(const RegulatoryElementConstPtrs& regelems) const {
-  for (auto& regelem : regelems) {
+  for (const auto& regelem : regelems) {
     auto speedLimit = std::dynamic_pointer_cast<const SpeedLimit>(regelem);
     if (!!speedLimit) {
       return SpeedLimitInformation{trafficSignToVelocity(speedLimit->type()), true};

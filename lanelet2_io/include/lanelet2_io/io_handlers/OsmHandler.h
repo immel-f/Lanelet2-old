@@ -1,7 +1,7 @@
 #pragma once
-#include "OsmFile.h"
-#include "Parser.h"
-#include "Writer.h"
+#include "lanelet2_io/io_handlers/OsmFile.h"
+#include "lanelet2_io/io_handlers/Parser.h"
+#include "lanelet2_io/io_handlers/Writer.h"
 
 namespace lanelet {
 namespace io_handlers {
@@ -11,10 +11,17 @@ namespace io_handlers {
 class OsmWriter : public Writer {
  public:
   using Writer::Writer;
+  /**
+   * @brief Write the provided map to a file according to the provided parameters:
+   *
+   * "josm_upload": the value of the "upload" attribute, "false" by default
+   * "josm_format_elevation": whether to format elevation to 2 decimal places as required by JSOM, "false" by default
+   */
+  void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& errors,
+             const io::Configuration& params = io::Configuration()) const override;
 
-  void write(const std::string& filename, const LaneletMap& laneletMap, ErrorMessages& errors) const override;
-
-  std::unique_ptr<osm::File> toOsmFile(const LaneletMap& laneletMap, ErrorMessages& errors) const;
+  std::unique_ptr<osm::File> toOsmFile(const LaneletMap& laneletMap, ErrorMessages& errors,
+                                       const io::Configuration& params = io::Configuration()) const;
 
   static constexpr const char* extension() { return ".osm"; }
 
